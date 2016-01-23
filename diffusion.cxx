@@ -24,7 +24,7 @@ int main(){
   const double xmax = 20;
   const double dx = (xmax-xmin)/(N-1) ;
 
-  double dt = dx;
+  double dt = 10* dx * dx;
   double t = 0;
   const int Na = 10;
   const int Nk = int(tEnd/Na/dt);
@@ -37,18 +37,21 @@ int main(){
 
   initialize(u0,dx,dt, xmin,N);
 
-  writeToFile(u0, "u_0", dx, xmin, N,t);
+  writeToFile(u0, "u_dt=dx_0", dx, xmin, N,t);
 
   cout << "Nk = " << Nk << endl;
 
   for(int i=1; i<=Na; i++)
   {
    for(int j=0; j<Nk; j++){
-
+   step(u1,u0,dt,dx,D,N);
+   h=u0;
+   u0=u1;
+   u1=h;
 
    }
    strm.str("");
-   strm << "u_" << i;
+   strm << "u_dt=dx_" << i;
    writeToFile(u0, strm.str(), dx, xmin, N,t);
   }
 
@@ -59,10 +62,14 @@ int main(){
   return 0;
 }
 //-----------------------------------------------
-void step(double* const f1, double* const f0,
+void step(double* const u1, double* const u0,
           const double dt, const double dx,
-          const double D, const int N)
-{
+          const double D, const int N){
+ u1[0] = u0[0] + dt * D * 1.0/dx * 1.0/dx * (u0[1] - 2*u0[0] + u0[N-1]);
+ u1[N-1] = u0[N-1] + dt * D * 1.0/dx * 1.0/dx * (u0[0] - 2*u0[N-1] + u0[N-2]);
+ for(int i=1 ; i<N-1 ; i++){
+ u1[i] = u0[i] + dt * D * 1.0/dx * 1.0/dx * (u0[i+1] - 2*u0[i] + u0[i-1]);
+}
 
 }
 //-----------------------------------------------
