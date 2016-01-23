@@ -48,6 +48,7 @@ int main(){
    h=u0;
    u0=u1;
    u1=h;
+   t=t+dt;
 
    }
    strm.str("");
